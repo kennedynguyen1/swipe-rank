@@ -1,9 +1,12 @@
-import './globals.css'
-import type { Metadata } from 'next'
+import "./globals.css"
+import type { Metadata } from "next"
+import { Inter } from "next/font/google"
+import type React from "react"
 
+const inter = Inter({ subsets: ["latin"] })
 export const metadata: Metadata = {
-  title: 'SwipeRank',
-  description: 'The ultimate applicant ranking tool for clubs and organizations',
+  title: "SwipeRank - Simplify Your Applicant Ranking Process",
+  description: "SwipeRank helps clubs and organizations efficiently review and rank applicants with an intuitive, swipe-based interface.",
 }
 
 export default function RootLayout({
@@ -13,8 +16,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <head />
-      <body>{children}</body>
+      <body className={inter.className}>{children}</body>
     </html>
   )
 }
