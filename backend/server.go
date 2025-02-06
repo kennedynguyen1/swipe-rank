@@ -2,12 +2,15 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"time"
 
 	"github.com/joho/godotenv"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -45,5 +48,24 @@ func main() {
 	if err := client.Ping(ctx, nil); err != nil {
 		log.Fatalf("Ping failed: %v", err)
 	}
+	http.HandleFunc("/count-applicants", countApplicantsHandler(client))
 	fmt.Println("Successfully connected to MongoDB!")
+	http.ListenAndServe(":8080", nil)
+}
+
+func countApplicantsHandler(client *mongo.Client) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+
+		collection := client.Database("akpsi-ucsb").Collection("applicants")
+		count, err := collection.CountDocuments(ctx, bson.M{})
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Error counting documents: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]int64{"count": count})
+	}
 }
