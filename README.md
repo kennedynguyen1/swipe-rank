@@ -1,4 +1,4 @@
-# Next.js Application
+# Swipe-Rank
 
 ## 📌 Project Setup Instructions
 
